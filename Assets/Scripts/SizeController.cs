@@ -1,10 +1,12 @@
+using System;
+using System.Globalization;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
 public class SizeControlller : MonoBehaviour
 {
-    public GameObject targetObject;
+    private static GameObject targetObject;
     public Slider heightSlider;
     public Slider widthSlider;
     public Slider depthSlider;
@@ -12,37 +14,83 @@ public class SizeControlller : MonoBehaviour
     public TMP_InputField widthTMPInputField;
     public TMP_InputField depthTMPInputField;
 
-    private Vector3 initialScale;
+    private static Vector3 initialScale;
+    private static bool modelChanged = false;
 
     private void Start()
     {
-        initialScale = targetObject.transform.localScale;
-
-        // Initialize TMP InputField values with current slider values
-        heightTMPInputField.text = initialScale.y.ToString();
-        widthTMPInputField.text = initialScale.x.ToString();
-        depthTMPInputField.text = initialScale.z.ToString();
+        ARChangeModelOnSelection.OnSendSelectedModel += SetCurrentSelectedModel;
+        heightTMPInputField.onValueChanged.AddListener(OnHeightInputChange);
+        widthTMPInputField.onValueChanged.AddListener(OnWidthInputChange);
+        depthTMPInputField.onValueChanged.AddListener(OnDepthInputChange);
+        heightSlider.onValueChanged.AddListener(OnHeightSliderUpdate);
+        widthSlider.onValueChanged.AddListener(OnWidthSliderUpdate);
+        depthSlider.onValueChanged.AddListener(OnDepthSliderUpdate);
+    }
+    
+    private static void SetCurrentSelectedModel(GameObject selectedModel)
+    {
+        targetObject = selectedModel;
+        initialScale = selectedModel.gameObject.transform.localScale;
+        modelChanged = true;
     }
 
     private void Update()
     {
-        // Parse and update object scale from TMP InputFields
-        if (float.TryParse(heightTMPInputField.text, out float height))
-        {
-            targetObject.transform.localScale = new Vector3(targetObject.transform.localScale.x, height, targetObject.transform.localScale.z);
-            heightSlider.value = height - initialScale.y;
-        }
+        if (!modelChanged) return;
+        heightTMPInputField.text = initialScale.y.ToString(CultureInfo.InvariantCulture);
+        widthTMPInputField.text = initialScale.x.ToString(CultureInfo.InvariantCulture);
+        depthTMPInputField.text = initialScale.z.ToString(CultureInfo.InvariantCulture);
+        modelChanged = false;
+    }
 
-        if (float.TryParse(widthTMPInputField.text, out float width))
-        {
-            targetObject.transform.localScale = new Vector3(width, targetObject.transform.localScale.y, targetObject.transform.localScale.z);
-            widthSlider.value = width - initialScale.x;
-        }
+    private void OnHeightInputChange(string heightString)
+    {
+        if (!(float.TryParse(heightString, out var height) && targetObject)) return;
+        var localScale = targetObject.transform.localScale;
+        localScale = new Vector3(localScale.x, height, localScale.z);
+        targetObject.transform.localScale = localScale;
+        heightSlider.value = height;
 
-        if (float.TryParse(depthTMPInputField.text, out float depth))
-        {
-            targetObject.transform.localScale = new Vector3(targetObject.transform.localScale.x, targetObject.transform.localScale.y, depth);
-            depthSlider.value = depth - initialScale.z;
-        }
+    }
+    private void OnWidthInputChange(string widthString)
+    {
+        if (!(float.TryParse(widthString, out var width) && targetObject)) return;
+        var localScale = targetObject.transform.localScale;
+        localScale = new Vector3(width, localScale.y, localScale.z);
+        targetObject.transform.localScale = localScale;
+        widthSlider.value = width;
+    }
+    private void OnDepthInputChange(string depthString)
+    {
+        if (!(float.TryParse(depthString, out var depth) && targetObject)) return;
+        var localScale = targetObject.transform.localScale;
+            localScale = new Vector3(localScale.x, localScale.y, depth);
+            targetObject.transform.localScale = localScale;
+            depthSlider.value = depth;
+    }
+
+    private void OnHeightSliderUpdate(float height)
+    {
+        heightTMPInputField.text = height.ToString(CultureInfo.InvariantCulture);
+    }
+    private void OnWidthSliderUpdate(float width)
+    {
+        widthTMPInputField.text = width.ToString(CultureInfo.InvariantCulture);
+    }
+    private void OnDepthSliderUpdate(float depth)
+    {
+        depthTMPInputField.text = depth.ToString(CultureInfo.InvariantCulture);
+    }
+
+    private void OnDestroy()
+    {
+        ARChangeModelOnSelection.OnSendSelectedModel -= SetCurrentSelectedModel;
+        heightTMPInputField.onValueChanged.RemoveListener(OnHeightInputChange);
+        widthTMPInputField.onValueChanged.RemoveListener(OnWidthInputChange);
+        depthTMPInputField.onValueChanged.RemoveListener(OnDepthInputChange);
+        heightSlider.onValueChanged.RemoveListener(OnHeightSliderUpdate);
+        widthSlider.onValueChanged.RemoveListener(OnWidthSliderUpdate);
+        depthSlider.onValueChanged.RemoveListener(OnDepthSliderUpdate);
     }
 }

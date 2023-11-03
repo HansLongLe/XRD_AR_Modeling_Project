@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5208207339518556942}
   - component: {fileID: 2823498959515717360}
   - component: {fileID: 1085727590814697539}
+  - component: {fileID: 7826336763963294318}
   m_Layer: 0
   m_Name: Triangular prism
   m_TagString: Untagged
@@ -159,6 +160,19 @@ MonoBehaviour:
   onSelectedSelectFingerUp:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &7826336763963294318
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 176297245811147176}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d176970c14946f5449c76cb1351ce554, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  modelName: Triangular prism
 --- !u!1 &2430009330846021127
 GameObject:
   m_ObjectHideFlags: 0
@@ -174,7 +188,6 @@ GameObject:
   - component: {fileID: 5435807127680525100}
   - component: {fileID: 265433912723972538}
   - component: {fileID: 1947941698684341467}
-  - component: {fileID: 1467799748013108595}
   m_Layer: 0
   m_Name: Triangular prism
   m_TagString: Untagged
@@ -192,8 +205,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 100, y: 100, z: 100}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 8359303428035949234}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -532,15 +545,3 @@ MonoBehaviour:
   precomputeOutline: 0
   bakeKeys: []
   bakeValues: []
---- !u!114 &1467799748013108595
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2430009330846021127}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d176970c14946f5449c76cb1351ce554, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
