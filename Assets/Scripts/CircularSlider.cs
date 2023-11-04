@@ -18,7 +18,7 @@ public class CircularSlider : MonoBehaviour
     [SerializeField] private TextMeshProUGUI valueY;
     [SerializeField] private TextMeshProUGUI valueZ;
     
-    private static Transform targetObject; // Reference to the object you want to rotate
+    private static GameObject targetObject; // Reference to the object you want to rotate
     private static bool modelChanged = false;
 
     private Vector3 mousePos;
@@ -30,14 +30,16 @@ public class CircularSlider : MonoBehaviour
     
     private static void SetCurrentSelectedModel(GameObject selectedModel)
     {
-        targetObject = selectedModel.transform;
+        targetObject = selectedModel;
+        if (selectedModel == null) return;
         modelChanged = true;
+
     }
 
     private void Update()
     {
-        if(!modelChanged) return;
-        var modelRotation = targetObject.transform.eulerAngles;
+        if(!modelChanged || !targetObject) return;
+        var modelRotation = targetObject.transform.transform.eulerAngles;
         valueX.text = Mathf.Round(360 - modelRotation.x).ToString(CultureInfo.CurrentCulture);
         valueY.text = Mathf.Round(360 - modelRotation.y).ToString(CultureInfo.CurrentCulture);
         valueZ.text = Mathf.Round(360 - modelRotation.z).ToString(CultureInfo.CurrentCulture);
@@ -70,10 +72,10 @@ public class CircularSlider : MonoBehaviour
         angle = (angle <= 0) ? (360 + angle) : angle;
         
         // Adjust the rotation of the targetObject around the specified axis
-        if(targetObject)
+        if(targetObject != null)
         {
             var rotation = Quaternion.AngleAxis(angle , axis);
-            targetObject.rotation = rotation;
+            targetObject.transform.rotation = rotation;
         }
 
         angle = ((angle >= 360) ? (angle - 360) : angle);

@@ -20,17 +20,13 @@ public class SizeControlller : MonoBehaviour
     private void Start()
     {
         ARChangeModelOnSelection.OnSendSelectedModel += SetCurrentSelectedModel;
-        heightTMPInputField.onValueChanged.AddListener(OnHeightInputChange);
-        widthTMPInputField.onValueChanged.AddListener(OnWidthInputChange);
-        depthTMPInputField.onValueChanged.AddListener(OnDepthInputChange);
-        heightSlider.onValueChanged.AddListener(OnHeightSliderUpdate);
-        widthSlider.onValueChanged.AddListener(OnWidthSliderUpdate);
-        depthSlider.onValueChanged.AddListener(OnDepthSliderUpdate);
+        
     }
     
     private static void SetCurrentSelectedModel(GameObject selectedModel)
     {
         targetObject = selectedModel;
+        if (!targetObject) return;
         initialScale = selectedModel.gameObject.transform.localScale;
         modelChanged = true;
     }

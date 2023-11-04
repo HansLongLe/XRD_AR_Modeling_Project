@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using UnityEngine;
 
 public class DeleteModel : MonoBehaviour
@@ -19,9 +21,14 @@ public class DeleteModel : MonoBehaviour
 
     public void DeleteSelectedModel()
     {
-        if (currentModel)
+        if (currentModel != null)
         {
             Destroy(currentModel);
         }
+    }
+
+    private void OnDestroy()
+    {
+        ARChangeModelOnSelection.OnSendSelectedModel -= SetCurrentSelectedModel;
     }
 }
