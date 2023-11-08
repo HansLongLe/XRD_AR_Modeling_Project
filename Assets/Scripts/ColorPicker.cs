@@ -1,10 +1,6 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using UnityEngine.PlayerLoop;
 
 public class ColorPicker : MonoBehaviour
 {
@@ -14,7 +10,7 @@ public class ColorPicker : MonoBehaviour
 
     [SerializeField] private Slider hueSlider;
 
-    [SerializeField] private TMP_InputField hexInputField;
+    [SerializeField] private TMP_InputField hexInputField,  redInputField, greenInputField, blueInputField;
 
     private Texture2D hueTexture, svTexture, outputTexture;
 
@@ -36,7 +32,7 @@ public class ColorPicker : MonoBehaviour
 
         for (int i = 0; i < hueTexture.height; i++)
         {
-            hueTexture.SetPixel(0, i, Color.HSVToRGB((float)i / hueTexture.height, 1, 0.05f));
+            hueTexture.SetPixel(0, i, Color.HSVToRGB((float)i / hueTexture.height, 1, 1f));
         }
         
         hueTexture.Apply();
@@ -91,6 +87,12 @@ public class ColorPicker : MonoBehaviour
         }
         
         outputTexture.Apply();
+
+        hexInputField.text = ColorUtility.ToHtmlStringRGB(currentColor);
+        redInputField.text = Mathf.FloorToInt(currentColor.r * 255).ToString();
+        greenInputField.text = Mathf.FloorToInt(currentColor.g * 255).ToString();
+        blueInputField.text = Mathf.FloorToInt(currentColor.b * 255).ToString();
+      
         changeThisColor.GetComponent<MeshRenderer>().material.color = currentColor;
     }
 
@@ -118,6 +120,41 @@ public class ColorPicker : MonoBehaviour
         
         UpdateOutputImage();
     }
-    
 
+    public void OnHexInput()
+    {
+        if(hexInputField.text.Length < 6) {return;}
+
+        Color newCol;
+
+        if (ColorUtility.TryParseHtmlString("#" + hexInputField.text, out newCol))
+        {
+            Color.RGBToHSV(newCol, out currentHue, out currentSat, out currentVal);
+        }
+
+        hueSlider.value = currentHue;
+        UpdateOutputImage();
+    }
+    
+    public void UpdateRGBImage()
+    {
+        float r, g, b;
+
+        if (float.TryParse(redInputField.text, out r) &&
+            float.TryParse(greenInputField.text, out g) &&
+            float.TryParse(blueInputField.text, out b))
+        {
+      
+            r = Mathf.Clamp01(r / 255f);
+            g = Mathf.Clamp01(g / 255f);
+            b = Mathf.Clamp01(b / 255f);
+
+            Color newColor = new Color(r, g, b);
+            Color.RGBToHSV(newColor, out currentHue, out currentSat, out currentVal);
+
+            hueSlider.value = currentHue;
+
+            UpdateOutputImage();
+        }
+    }
 }

@@ -46,14 +46,20 @@ public class MenuController : MonoBehaviour, IEndDragHandler
  
     public void Next()
     {
-        currentPage++;
-        targetPos += new Vector3(pageStep.x, 0, 0);
+        if (currentPage < pages)
+        {
+            currentPage++;
+            targetPos += new Vector3(pageStep.x, 0, 0);
+        }
     }
 
     public void Previous()
     {
-        currentPage--;
-        targetPos -= new Vector3(pageStep.x, 0, 0);
+        if (currentPage > 1)
+        {
+            currentPage--;
+            targetPos -= new Vector3(pageStep.x, 0, 0);
+        }
     }
 
     public void Up()
