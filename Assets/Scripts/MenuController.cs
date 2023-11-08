@@ -8,9 +8,11 @@ public class MenuController : MonoBehaviour, IEndDragHandler
     [SerializeField] private RectTransform levelPagesRect;
     [SerializeField] private float tweenTime;
     [SerializeField] private LeanTweenType tweenType;
-    private int currentPage;
+    [SerializeField] private int currentPage;
     private Vector3 targetPos;
     private float dragThreshold;
+    [SerializeField] private bool isWindowUp = false;
+
 
     private void Awake()
     {
@@ -18,89 +20,80 @@ public class MenuController : MonoBehaviour, IEndDragHandler
         targetPos = levelPagesRect.localPosition;
     }
 
-    public void ObjectMenuPage()
+    public void ChangePage(int targetPage)
     {
-        if (currentPage == 2)
+        if (!isWindowUp)
         {
-            currentPage--;
-            targetPos -= pageStep;
-            MovePage();
+            Up();
         }
-        if (currentPage == 3)
+        else if (targetPage == currentPage && isWindowUp)
         {
-            currentPage = 1;
-            targetPos -= (2 * pageStep);
-            MovePage();
+            Down();
         }
-    }
 
-    public void SizePage()
-    {
-        if (currentPage == 3)
+    
+        while (targetPage < currentPage)
         {
-            currentPage--;
-            targetPos -= pageStep;
-            MovePage();
+            Previous();
         }
-        if (currentPage == 1)
+        while (targetPage > currentPage)
         {
-            currentPage++;
-            targetPos += pageStep;
-            MovePage();
+            Next();
         }
+        MovePage();
     }
-
-    public void RotationPage()
-    {
-        if (currentPage == 2)
-        {
-            currentPage++;
-            targetPos += pageStep;
-            MovePage();
-        }
-        if (currentPage == 1)
-        {
-            currentPage = 3;
-            targetPos += (2*pageStep);
-            MovePage();
-        }
-    }
-
+    
+ 
     public void Next()
     {
-        if (currentPage < pages)
-        {
-            currentPage++;
-            targetPos += pageStep;
-            MovePage();
-        }
+        currentPage++;
+        targetPos += new Vector3(pageStep.x, 0, 0);
     }
 
     public void Previous()
     {
-        if (currentPage > 1)
+        currentPage--;
+        targetPos -= new Vector3(pageStep.x, 0, 0);
+    }
+
+    public void Up()
+    {
+        if (!isWindowUp)
         {
-            currentPage--;
-            targetPos -= pageStep;
-            MovePage();
+            isWindowUp = true;
+            targetPos -= new Vector3(0, pageStep.y, 0);
+        }
+    }
+    
+    public void Down()
+    {
+        if (isWindowUp)
+        {
+            isWindowUp = false;
+            targetPos += new Vector3(0, pageStep.y, 0);
         }
     }
 
-    public void MovePage()
+    private void MovePage()
     {
         levelPagesRect.LeanMoveLocal(targetPos, tweenTime).setEase(tweenType);
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        if (Mathf.Abs(eventData.position.x - eventData.pressPosition.x) > dragThreshold)
+        float deltaX = eventData.position.x - eventData.pressPosition.x;
+        float deltaY = eventData.position.y - eventData.pressPosition.y;
+
+        if (Mathf.Abs(deltaX) > Mathf.Abs(deltaY))
         {
-            if (eventData.position.x > eventData.pressPosition.x) Previous();
-            else Next();
+            if (deltaX > dragThreshold) Previous();
+            else if (deltaX < -dragThreshold) Next();
         }
         else
         {
-            MovePage();
+            if (deltaY > dragThreshold) Up();
+            else if (deltaY < -dragThreshold) Down();
         }
+        MovePage();
     }
 }
