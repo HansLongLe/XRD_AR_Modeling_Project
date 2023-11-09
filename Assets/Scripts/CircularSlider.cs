@@ -14,10 +14,11 @@ public class CircularSlider : MonoBehaviour
     [SerializeField] private Image fillY;
     [SerializeField] private Image fillZ;
 
-    [SerializeField] private TextMeshProUGUI valueX;
-    [SerializeField] private TextMeshProUGUI valueY;
-    [SerializeField] private TextMeshProUGUI valueZ;
-    
+    [SerializeField] private TMP_InputField valueX;
+    [SerializeField] private TMP_InputField valueY;
+    [SerializeField] private TMP_InputField valueZ;
+    private float floatValue;
+
     private static GameObject targetObject; // Reference to the object you want to rotate
     private static bool modelChanged = false;
 
@@ -27,7 +28,7 @@ public class CircularSlider : MonoBehaviour
     {
         ARChangeModelOnSelection.OnSendSelectedModel += SetCurrentSelectedModel;
     }
-    
+
     private static void SetCurrentSelectedModel(GameObject selectedModel)
     {
         targetObject = selectedModel;
@@ -38,7 +39,7 @@ public class CircularSlider : MonoBehaviour
 
     private void Update()
     {
-        if(!modelChanged || !targetObject) return;
+        if (!modelChanged || !targetObject) return;
         var modelRotation = targetObject.transform.transform.eulerAngles;
         valueX.text = Mathf.Round(360 - modelRotation.x).ToString(CultureInfo.CurrentCulture);
         valueY.text = Mathf.Round(360 - modelRotation.y).ToString(CultureInfo.CurrentCulture);
@@ -64,26 +65,55 @@ public class CircularSlider : MonoBehaviour
         UpdateRotation(handleZ, fillZ, valueZ, Vector3.forward);
     }
 
-    private void UpdateRotation(Transform handle, Image fill, TMP_Text value, Vector3 axis)
+    private void UpdateRotation(Transform handle, Image fill, TMP_InputField value, Vector3 axis)
     {
         mousePos = Input.mousePosition;
         Vector2 direction = mousePos - handle.position;
         var angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         angle = (angle <= 0) ? (360 + angle) : angle;
-        
-        // Adjust the rotation of the targetObject around the specified axis
-        if(targetObject != null)
+
+        if (targetObject != null)
         {
-            var rotation = Quaternion.AngleAxis(angle , axis);
+            var rotation = Quaternion.AngleAxis(angle, axis);
             targetObject.transform.rotation = rotation;
         }
 
         angle = ((angle >= 360) ? (angle - 360) : angle);
         fill.fillAmount = 1f - (angle / 360f);
-        value.text = Mathf.Round(fill.fillAmount * 360).ToString(CultureInfo.CurrentCulture) + "°";
+        value.text = Mathf.Round(fill.fillAmount * 360).ToString(CultureInfo.CurrentCulture);
     }
 
-    private void OnDestroy()
+    public void UpdateThroughInputX()
+    {
+        UpdateThroughInput(fillX,valueX);
+    }
+    
+    public void UpdateThroughInputY()
+    {
+        UpdateThroughInput(fillY,valueY);
+    }
+    public void UpdateThroughInputZ()
+    {
+        UpdateThroughInput(fillZ,valueZ);
+    }
+    public void UpdateThroughInput(Image fill, TMP_InputField value)
+    {
+        if (float.TryParse(value.text, out floatValue))
+        {
+            float remainder = floatValue % 360;
+            float normalizedValue = remainder / 360f;
+
+            fill.fillAmount = Mathf.Clamp(normalizedValue, 0f, 1f);
+            value.text = Mathf.Round(fill.fillAmount * 360).ToString(CultureInfo.CurrentCulture);
+        }
+        else
+        {
+            Debug.LogError("Invalid input: " + valueX.text);
+        }
+    }
+
+
+private void OnDestroy()
     {
         ARChangeModelOnSelection.OnSendSelectedModel -= SetCurrentSelectedModel;
     }

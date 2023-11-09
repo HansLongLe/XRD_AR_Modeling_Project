@@ -1,40 +1,46 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
-public class ObjectMovement : MonoBehaviour
+public class ObjectMovement : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
-    [SerializeField] private float speed = 500.0f;
-    
-    public GameObject gameObject;
+    private float speed = 500.0f;
+    public GameObject gameObjectToMove;
+    private Vector3 movementDirection = Vector3.zero;
 
-    public void MoveForward()
+    public void OnPointerDown(PointerEventData eventData)
     {
-        gameObject.transform.Translate(Vector3.forward * Time.deltaTime * speed);
+        string buttonName = gameObject.name;
+        switch (buttonName)
+        {
+            case "ZForward":
+                movementDirection = Vector3.forward;
+                break;
+            case "ZBackward":
+                movementDirection = Vector3.back;
+                break;
+            case "XLeft":
+                movementDirection = Vector3.left;
+                break;
+            case "XRight":
+                movementDirection = Vector3.right;
+                break;
+            case "YUp":
+                movementDirection = Vector3.up;
+                break;
+            case "YDown":
+                movementDirection = Vector3.down;
+                break;
+        }
     }
-    
-    public void MoveBackward()
+
+    public void OnPointerUp(PointerEventData eventData)
     {
-        gameObject.transform.Translate(Vector3.back * Time.deltaTime * speed);
+        movementDirection = Vector3.zero;
     }
-    
-    public void MoveLeft()
+
+    private void Update()
     {
-        gameObject.transform.Translate(Vector3.left * Time.deltaTime * speed);
-    }
-    
-    public void MoveRight()
-    {
-        gameObject.transform.Translate(Vector3.right * Time.deltaTime * speed);
-    }
-    
-    public void MoveUp()
-    {
-        gameObject.transform.Translate(Vector3.up * Time.deltaTime * speed);
-    }
-    
-    public void MoveDown()
-    {
-        gameObject.transform.Translate(Vector3.down * Time.deltaTime * speed);
+        gameObjectToMove.transform.Translate(movementDirection.normalized * Time.deltaTime * speed);
     }
 }
