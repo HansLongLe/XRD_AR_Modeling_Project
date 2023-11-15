@@ -936,7 +936,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5959a375b388afb4d8e2406077932030, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameObjectToMove: {fileID: 0}
 --- !u!1 &78782493
 GameObject:
   m_ObjectHideFlags: 0
@@ -1431,7 +1430,6 @@ MonoBehaviour:
   redInputField: {fileID: 288782530}
   greenInputField: {fileID: 868256226}
   blueInputField: {fileID: 1365342696}
-  changeThisColor: {fileID: 0}
 --- !u!114 &105382289
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4075,7 +4073,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5959a375b388afb4d8e2406077932030, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameObjectToMove: {fileID: 0}
 --- !u!1 &397978051
 GameObject:
   m_ObjectHideFlags: 0
@@ -7902,7 +7899,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5959a375b388afb4d8e2406077932030, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameObjectToMove: {fileID: 0}
 --- !u!1 &996627382
 GameObject:
   m_ObjectHideFlags: 0
@@ -10104,7 +10100,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5959a375b388afb4d8e2406077932030, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameObjectToMove: {fileID: 0}
 --- !u!1 &1206151890
 GameObject:
   m_ObjectHideFlags: 0
@@ -12065,7 +12060,6 @@ MonoBehaviour:
   - {fileID: 94574048}
   - {fileID: 1420746519}
   - {fileID: 216815535}
-  - {fileID: 0}
   - {fileID: 174987322}
 --- !u!114 &1469028408
 MonoBehaviour:
@@ -13929,7 +13923,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5959a375b388afb4d8e2406077932030, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameObjectToMove: {fileID: 0}
 --- !u!1 &1869037712
 GameObject:
   m_ObjectHideFlags: 0
@@ -15223,7 +15216,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5959a375b388afb4d8e2406077932030, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameObjectToMove: {fileID: 0}
 --- !u!1 &2103967582
 GameObject:
   m_ObjectHideFlags: 0
