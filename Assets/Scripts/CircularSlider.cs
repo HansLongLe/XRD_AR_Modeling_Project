@@ -26,27 +26,36 @@ public class CircularSlider : MonoBehaviour
 
     private void Start()
     {
-        ARChangeModelOnSelection.OnSendSelectedModel += SetCurrentSelectedModel;
+        TouchSelection.OnSelectionModel += SetCurrentSelectedModel;
     }
 
-    private static void SetCurrentSelectedModel(GameObject selectedModel)
+    private static void SetCurrentSelectedModel(GameObject model)
     {
-        targetObject = selectedModel;
-        if (selectedModel == null) return;
+        targetObject = model;
         modelChanged = true;
-
+        
     }
 
     private void Update()
     {
         if (!modelChanged || !targetObject) return;
         var modelRotation = targetObject.transform.transform.eulerAngles;
-        valueX.text = Mathf.Round(360 - modelRotation.x).ToString(CultureInfo.CurrentCulture);
-        valueY.text = Mathf.Round(360 - modelRotation.y).ToString(CultureInfo.CurrentCulture);
-        valueZ.text = Mathf.Round(360 - modelRotation.z).ToString(CultureInfo.CurrentCulture);
-        fillX.fillAmount = 1f - (modelRotation.x / 360f);
-        fillY.fillAmount = 1f - (modelRotation.y / 360f);
-        fillZ.fillAmount = 1f - (modelRotation.z / 360f);
+        
+        var checkedValueX = Mathf.Round(360 - modelRotation.x);
+        checkedValueX = Math.Abs(Mathf.Round(360 - modelRotation.x) - 360f) < 0.001f ? 0f : checkedValueX;
+        
+        var checkedValueY = Mathf.Round(360 - modelRotation.y);
+        checkedValueY = Math.Abs(Mathf.Round(360 - modelRotation.y) - 360f) < 0.001f ? 0f : checkedValueY;
+        
+        var checkedValueZ = Mathf.Round(360 - modelRotation.z);
+        checkedValueZ = Math.Abs(Mathf.Round(360 - modelRotation.z) - 360f) < 0.001f ? 0f : checkedValueZ;
+        
+        valueX.text = checkedValueX.ToString(CultureInfo.CurrentCulture);
+        valueY.text = checkedValueY.ToString(CultureInfo.CurrentCulture);
+        valueZ.text = checkedValueZ.ToString(CultureInfo.CurrentCulture);
+        fillX.fillAmount = Math.Abs(1f - (modelRotation.x / 360f) - 1) < 0.001f ? 0 : 1f - (modelRotation.x / 360f);
+        fillY.fillAmount = Math.Abs(1f - (modelRotation.y / 360f) - 1) < 0.001f ? 0 : 1f - (modelRotation.y / 360f);
+        fillZ.fillAmount = Math.Abs(1f - (modelRotation.z / 360f) - 1) < 0.001f ? 0 : 1f - (modelRotation.z / 360f);
         modelChanged = false;
     }
 
@@ -85,26 +94,43 @@ public class CircularSlider : MonoBehaviour
 
     public void UpdateThroughInputX()
     {
-        UpdateThroughInput(fillX,valueX);
+        UpdateThroughInput(fillX,valueX, "x");
     }
     
     public void UpdateThroughInputY()
     {
-        UpdateThroughInput(fillY,valueY);
+        UpdateThroughInput(fillY,valueY, "y");
     }
     public void UpdateThroughInputZ()
     {
-        UpdateThroughInput(fillZ,valueZ);
+        UpdateThroughInput(fillZ,valueZ, "z");
     }
-    public void UpdateThroughInput(Image fill, TMP_InputField value)
+    private void UpdateThroughInput(Image fill, TMP_InputField value, string axis)
     {
         if (float.TryParse(value.text, out floatValue))
         {
-            float remainder = floatValue % 360;
-            float normalizedValue = remainder / 360f;
+            var remainder = floatValue % 360;
+            var normalizedValue = remainder / 360f;
 
             fill.fillAmount = Mathf.Clamp(normalizedValue, 0f, 1f);
             value.text = Mathf.Round(fill.fillAmount * 360).ToString(CultureInfo.CurrentCulture);
+
+            var rotationAmount = Mathf.Lerp(0f, 360f, normalizedValue);
+            var objectEuler = targetObject.transform.eulerAngles;
+            switch (axis)
+            {
+                case "x":
+                    targetObject.transform.rotation = Quaternion.Euler(rotationAmount, objectEuler.y, objectEuler.z);
+                    break;
+                case "y":
+                    targetObject.transform.rotation = Quaternion.Euler(objectEuler.x, rotationAmount, objectEuler.z);
+                    break;
+                case  "z":
+                    targetObject.transform.rotation = Quaternion.Euler(objectEuler.x, objectEuler.y, rotationAmount);
+                    break;
+            }
+
+
         }
         else
         {
@@ -113,8 +139,8 @@ public class CircularSlider : MonoBehaviour
     }
 
 
-private void OnDestroy()
+    private void OnDestroy()
     {
-        ARChangeModelOnSelection.OnSendSelectedModel -= SetCurrentSelectedModel;
+        TouchSelection.OnSelectionModel -= SetCurrentSelectedModel;
     }
 }

@@ -2,33 +2,30 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using Lean.Common;
+using Lean.Touch;
 using UnityEngine;
 
 public class DeleteModel : MonoBehaviour
 {
 
-    private static GameObject currentModel;
-    // Start is called before the first frame update
-    void Start()
+    private static GameObject targetObject;
+    
+    private void Start()
     {
-        ARChangeModelOnSelection.OnSendSelectedModel += SetCurrentSelectedModel;
+        TouchSelection.OnSelectionModel += SetCurrentSelectedModel;
     }
-
-    private static void SetCurrentSelectedModel(GameObject selectedModel)
+    
+    private static void SetCurrentSelectedModel(GameObject model)
     {
-        currentModel = selectedModel;
+        targetObject = model;
     }
 
     public void DeleteSelectedModel()
     {
-        if (currentModel != null)
+        if (targetObject)
         {
-            Destroy(currentModel);
+            Destroy(targetObject);
         }
-    }
-
-    private void OnDestroy()
-    {
-        ARChangeModelOnSelection.OnSendSelectedModel -= SetCurrentSelectedModel;
     }
 }

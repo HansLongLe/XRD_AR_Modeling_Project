@@ -12,7 +12,7 @@ public class SelectedModelManager : MonoBehaviour
     private ARPlaneManager arPlaneManager;
     
     private List<ARRaycastHit> hits = new List<ARRaycastHit>();
-
+    
     private Camera mainCamera;
     private static CreateModel selectedModel;
     
@@ -20,8 +20,8 @@ public class SelectedModelManager : MonoBehaviour
     void Start()
     {
         mainCamera = Camera.main;
-        arRaycastManager = FindObjectOfType<ARRaycastManager>();
-        arPlaneManager = FindObjectOfType<ARPlaneManager>();
+        arRaycastManager = GetComponent<ARRaycastManager>();
+        arPlaneManager = GetComponent<ARPlaneManager>();
         CreateModel.OnSendSelectedModel += SetModel;
     }
 
@@ -69,8 +69,8 @@ public class SelectedModelManager : MonoBehaviour
             position.y = 0f;
             var cameraPosition = mainCamera.transform.position;
             var direction = cameraPosition - position;
-            var targetRotation = Quaternion.LookRotation(direction);
-            obj.transform.rotation = targetRotation;
+            obj.transform.LookAt(mainCamera.transform);
+            obj.transform.rotation = Quaternion.Euler(0, obj.transform.eulerAngles.y, obj.transform.eulerAngles.z);
         }
         StartCoroutine(selectedModel.ScaleObjectDown());
         selectedModel = null;

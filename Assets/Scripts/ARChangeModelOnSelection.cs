@@ -1,70 +1,70 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using JetBrains.Annotations;
 using Lean.Touch;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 public class ARChangeModelOnSelection : MonoBehaviour
 {
     [SerializeField] private string modelName;
-    private Outline outline;
-    private GameObject childGameObject;
 
-    private Camera mainCamera;
     private LeanSelectableByFinger selectableByFinger;
+
+    private Outline outline;
+
+    private GameObject selectedModel;
 
     private Rigidbody rigidbody;
 
+    private Vector3 planePosition;
+
     
-    public delegate void ARChangeModelOnSelectionWithSelectedModel(GameObject selectedGameObject);
-    
-    public static event ARChangeModelOnSelectionWithSelectedModel OnSendSelectedModel;
 
     // Start is called before the first frame update
     private void Start()
     {
-        LeanTouch.OnFingerTap += HandleFingerTap;
-        mainCamera = Camera.main;
+        TouchSelection.OnSelectionModel += ModelSelection;
+        TouchSelection.OnPlanePosition += SetPlanePosition;
         outline = gameObject.transform.Find(modelName).GetComponent<Outline>();
         rigidbody = GetComponent<Rigidbody>();
-        childGameObject = gameObject.transform.Find(modelName).gameObject;
-        selectableByFinger = gameObject.GetComponent<LeanSelectableByFinger>();
         outline.enabled = true;
-        OnSendSelectedModel?.Invoke(gameObject);
+        selectableByFinger = GetComponent<LeanSelectableByFinger>();
     }
 
     private void Update()
     {
-        if (!(Input.touchCount > 0)) return;
-        var touch = Input.GetTouch(0);
-            if (touch.phase != TouchPhase.Began) return;
-            var ray = mainCamera.ScreenPointToRay(touch.position);
-            if (Physics.Raycast(ray, out var hit))
+        if (planePosition != null)
+        {
+            if (transform.position.y < planePosition.y)
             {
-                if (hit.collider.gameObject == childGameObject)
-                {
-                    OnSendSelectedModel?.Invoke(gameObject);
-                }
-                else
-                {
-                    OnSendSelectedModel?.Invoke(null);
-                }
-                
+                transform.position = new Vector3(transform.position.x, planePosition.y, transform.position.z);
             }
-
-
+        }
     }
 
-    private void HandleFingerTap(LeanFinger finger)
+    private void ModelSelection(GameObject model)
     {
-        selectableByFinger.enabled = !finger.IsOverGui;
+        if (model && model == gameObject)
+        {
+            outline.enabled = true;
+            rigidbody.isKinematic = true;
+            selectableByFinger.enabled = true;
 
+        }
+        else
+        {
+            outline.enabled = false;
+            rigidbody.isKinematic = false;
+            selectableByFinger.enabled = false;
+        }
     }
+
+    private void SetPlanePosition(Vector3 position)
+    {
+        planePosition = position;
+    }
+    
 
     private void OnDestroy()
     {
-        LeanTouch.OnFingerTap -= HandleFingerTap;
+        TouchSelection.OnSelectionModel -= ModelSelection;
+        TouchSelection.OnPlanePosition -= SetPlanePosition;
     }
 }

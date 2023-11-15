@@ -1,5 +1,7 @@
 using System;
 using System.Globalization;
+using Lean.Common;
+using Lean.Touch;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -19,16 +21,29 @@ public class SizeControlller : MonoBehaviour
 
     private void Start()
     {
-        ARChangeModelOnSelection.OnSendSelectedModel += SetCurrentSelectedModel;
-        
+        TouchSelection.OnSelectionModel += SetCurrentSelectedModel;
+        heightTMPInputField.onValueChanged.AddListener(OnHeightInputChange);
+        widthTMPInputField.onValueChanged.AddListener(OnWidthInputChange);
+        depthTMPInputField.onValueChanged.AddListener(OnDepthInputChange);
+        heightSlider.onValueChanged.AddListener(OnHeightSliderUpdate);
+        widthSlider.onValueChanged.AddListener(OnWidthSliderUpdate);
+        depthSlider.onValueChanged.AddListener(OnDepthSliderUpdate);
     }
     
-    private static void SetCurrentSelectedModel(GameObject selectedModel)
+    private static void SetCurrentSelectedModel(GameObject model)
     {
-        targetObject = selectedModel;
-        if (!targetObject) return;
-        initialScale = selectedModel.gameObject.transform.localScale;
+        targetObject = model;
+        if (targetObject)
+        {
+            initialScale = targetObject.transform.localScale;
+        }
+        else
+        {
+            initialScale = new Vector3(0, 0, 0);
+        }
+        
         modelChanged = true;
+        
     }
 
     private void Update()
@@ -42,7 +57,7 @@ public class SizeControlller : MonoBehaviour
 
     private void OnHeightInputChange(string heightString)
     {
-        if (!(float.TryParse(heightString, out var height) && targetObject)) return;
+        if (!(float.TryParse(heightString, out var height) && targetObject != null)) return;
         var localScale = targetObject.transform.localScale;
         localScale = new Vector3(localScale.x, height, localScale.z);
         targetObject.transform.localScale = localScale;
@@ -51,7 +66,7 @@ public class SizeControlller : MonoBehaviour
     }
     private void OnWidthInputChange(string widthString)
     {
-        if (!(float.TryParse(widthString, out var width) && targetObject)) return;
+        if (!(float.TryParse(widthString, out var width) && targetObject != null)) return;
         var localScale = targetObject.transform.localScale;
         localScale = new Vector3(width, localScale.y, localScale.z);
         targetObject.transform.localScale = localScale;
@@ -59,7 +74,7 @@ public class SizeControlller : MonoBehaviour
     }
     private void OnDepthInputChange(string depthString)
     {
-        if (!(float.TryParse(depthString, out var depth) && targetObject)) return;
+        if (!(float.TryParse(depthString, out var depth) && targetObject != null)) return;
         var localScale = targetObject.transform.localScale;
             localScale = new Vector3(localScale.x, localScale.y, depth);
             targetObject.transform.localScale = localScale;
@@ -81,7 +96,7 @@ public class SizeControlller : MonoBehaviour
 
     private void OnDestroy()
     {
-        ARChangeModelOnSelection.OnSendSelectedModel -= SetCurrentSelectedModel;
+        TouchSelection.OnSelectionModel -= SetCurrentSelectedModel;
         heightTMPInputField.onValueChanged.RemoveListener(OnHeightInputChange);
         widthTMPInputField.onValueChanged.RemoveListener(OnWidthInputChange);
         depthTMPInputField.onValueChanged.RemoveListener(OnDepthInputChange);

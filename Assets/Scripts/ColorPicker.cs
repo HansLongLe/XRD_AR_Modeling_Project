@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -14,14 +15,20 @@ public class ColorPicker : MonoBehaviour
 
     private Texture2D hueTexture, svTexture, outputTexture;
 
-    [SerializeField] private MeshRenderer changeThisColor;
+    private static GameObject targetObject;
 
     private void Start()
     {
+        TouchSelection.OnSelectionModel += SetCurrentSelectedModel;
         CreateHueImage();
         CreateSVImage();
         CreateOutputImage();
         UpdateOutputImage();
+    }
+    
+    private static void SetCurrentSelectedModel(GameObject model)
+    {
+        targetObject = model;
     }
 
     private void CreateHueImage()
@@ -92,8 +99,10 @@ public class ColorPicker : MonoBehaviour
         redInputField.text = Mathf.FloorToInt(currentColor.r * 255).ToString();
         greenInputField.text = Mathf.FloorToInt(currentColor.g * 255).ToString();
         blueInputField.text = Mathf.FloorToInt(currentColor.b * 255).ToString();
-      
-        changeThisColor.GetComponent<MeshRenderer>().material.color = currentColor;
+        if (targetObject)
+        {
+            targetObject.transform.GetChild(0).GetComponent<MeshRenderer>().material.color = currentColor;
+        }
     }
 
     public void SetSV(float S, float V)
@@ -156,5 +165,10 @@ public class ColorPicker : MonoBehaviour
 
             UpdateOutputImage();
         }
+    }
+
+    private void OnDestroy()
+    {
+        TouchSelection.OnSelectionModel -= SetCurrentSelectedModel;
     }
 }
